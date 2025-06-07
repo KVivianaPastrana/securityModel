@@ -1,3 +1,4 @@
+
 package com.security.demo.model;
 
 import jakarta.persistence.Column;
