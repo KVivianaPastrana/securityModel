@@ -21,14 +21,15 @@ public class Rol {
     @Column(name = "rol_name")
     private String rolName;
     
+    public Rol() {
+        
+    }
+    
     public Rol(Integer rolId, String rolName) {
         this.rolId = rolId;
         this.rolName = rolName;
     }
     
-    public Rol() {
-        
-    }
     
     public Integer getRolId() {
         return rolId;
