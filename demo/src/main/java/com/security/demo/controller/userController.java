@@ -53,11 +53,11 @@ public ResponseEntity<Object> createUser(@RequestBody Usersdto userDto) {
 }
 
 
-    @PutMapping
-public ResponseEntity<Object> updateUser(@RequestBody Usersdto userDto) {
-    // Mapeo manual de DTO a entidad Users
+@PutMapping("/{id}")
+public ResponseEntity<Object> updateUser(@PathVariable Integer id, @RequestBody Usersdto userDto) {
+    // Mapear DTO a entidad Users
     Users userEntity = new Users();
-    userEntity.setUserId(userDto.getUserId());
+    userEntity.setUserId(id);  // aquí usas el ID del path
     userEntity.setUsername(userDto.getUsername());
     userEntity.setEmail(userDto.getEmail());
 

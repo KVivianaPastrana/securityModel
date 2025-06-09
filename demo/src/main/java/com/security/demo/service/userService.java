@@ -39,9 +39,8 @@ public ResponseDTO deleteUser(Integer id) {
         if (!user.isPresent()) { // corregido: si no está presente, es "not found"
             return new ResponseDTO("User not found", false, null);
         }
+        iusers.deleteById(id);  // Aquí borras el registro
 
-        user.get().setEmail(null);
-        iusers.save(user.get());
 
         return new ResponseDTO("User deleted successfully", true, null);
     } catch (Exception e) {

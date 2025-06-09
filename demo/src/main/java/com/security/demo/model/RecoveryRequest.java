@@ -19,7 +19,7 @@ public class RecoveryRequest {
     private Integer recoveryRequestId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id")
     private Users user;
 
     @Column(name="request_date")

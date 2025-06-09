@@ -13,15 +13,17 @@ public class PermissionRole {
     private Integer permissionRoleId;
 
     @ManyToOne
-    @JoinColumn(name = "page_id", referencedColumnName = "id")
+    @JoinColumn(name = "page_id")
     private Page page;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    @JoinColumn(name = "role_id")
     private Rol role;
 
-    @Column (name = "action")
+    @Column (name= "action")
     private String action;
+
+
     public PermissionRole() {}
 
     public PermissionRole(Integer permissionRoleId,Page page, Rol role, String action) {

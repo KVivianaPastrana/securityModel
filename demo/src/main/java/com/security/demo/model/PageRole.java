@@ -12,12 +12,13 @@ public class PageRole {
     private Integer pageRoleId;
 
     @ManyToOne
-    @JoinColumn(name = "page_id", referencedColumnName = "id")
-    private Page page;
+@JoinColumn(name = "page_id", referencedColumnName = "page_id")
+private Page page;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "id")
-    private Rol role;
+@ManyToOne
+@JoinColumn(name = "rol_id", referencedColumnName = "rol_id")
+private Rol role;
+
 
     public PageRole() {}
 

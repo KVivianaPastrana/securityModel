@@ -70,15 +70,15 @@ public ResponseDTO updateRol(Rol rol) {
 
    public Roldto convertToDTO(Rol rol) {
     Roldto dto = new Roldto();
-    dto.setId(rol.getRolId());
-    dto.setId(rol.getRolId());
+    dto.setRolId(rol.getRolId());
+    dto.setRolId(rol.getRolId());
     
     return dto;
    }    
    public Rol convertToModel(Roldto dto) {
     Rol rol = new Rol();
-    rol.setRolId(dto.getId());
-    rol.setRolId(dto.getId());
+    rol.setRolId(dto.getRolId());
+    rol.setRolId(dto.getRolId());
     return rol;
    }    
 

@@ -10,16 +10,16 @@ public class Roldto {
  public Roldto() {
      
  }
- public Integer getId() {
+ public Integer getRolId() {
      return id;
  }
- public void setId(Integer id) {
+ public void setRolId(Integer id) {
      this.id = id;
  }
- public String getName() {
+ public String getRolName() {
      return name;
  }
- public void setName(String name) {
+ public void setRolName(String name) {
      this.name = name;
  }
 }
