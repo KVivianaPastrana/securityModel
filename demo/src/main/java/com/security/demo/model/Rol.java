@@ -6,10 +6,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import com.security.demo.model.Users;
-    
+import java.util.List;
+
 
 
 @Entity
@@ -23,12 +25,9 @@ public class Rol {
     
     @Column(name = "rol_name")
     private String rolName;
-    // Relación muchos-a-uno con Users
-    @ManyToOne
-    @JoinColumn(name = "user_id") // esta columna conecta con Users
-    private Users user;
-
-    
+  
+    @ManyToMany(mappedBy = "roles")
+private List<Users> users; // ✅ nombre plural y tipo correcto
     public Rol() {
         
     }
@@ -46,14 +45,17 @@ public class Rol {
     public void setRolId(Integer rolId) {
         this.rolId = rolId;
     }
-       public Users getUser() {
-        return user;
-    }
+       
 
-    public void setUser(Users user) {
-        this.user = user;
-    }
-    
+
+    // Getters y setters correctos
+public List<Users> getUsers() {
+    return users;
+}
+
+public void setUsers(List<Users> users) {
+    this.users = users;
+}
     public String getRolName() {
         return rolName;
     }

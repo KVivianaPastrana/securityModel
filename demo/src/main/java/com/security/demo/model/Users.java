@@ -34,10 +34,14 @@ public class Users {
 
     @Column(name = "password")
     private String password;
-        @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")  // Esta columna estará en la tabla `roles`
-    private List<Rol> roles;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+@JoinTable(
+    name = "users_roles",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "rol_id")
+)
+private List<Rol> roles;
 
     @Column(name="status")
     private Boolean status;
