@@ -1,75 +1,86 @@
 package com.security.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.security.demo.dto.ResponseDTO;
+import com.security.demo.dto.Usersdto;
 import com.security.demo.model.Users;
 import com.security.demo.service.userService;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import com.security.demo.dto.Usersdto;
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-
-import org.springframework.http.HttpStatus;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class userController {
+
     @Autowired
     private userService userService;
 
+    // Obtener todos los usuarios activos
     @GetMapping
-    public List<Users> findAll() {
-        return userService.findAll();
+    public ResponseEntity<ResponseDTO> getAllActiveUsers() {
+        List<Users> users = userService.getAllActiveUsers();
+        ResponseDTO response = new ResponseDTO();
+        response.setMessage("Active users retrieved successfully");
+        response.setSuccess(true);
+        response.setData(users);
+        return ResponseEntity.ok(response);
     }
 
-@GetMapping("/{id}")
-public ResponseEntity<Object> getUserById(@PathVariable Integer id) {
-    Optional<Users> user = userService.getUserById(id);
-
-    if (user.isPresent()) {
-        return new ResponseEntity<>(user.get(), HttpStatus.OK);
-    } else {
-        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+    // Obtener usuario por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseDTO> getUserById(@PathVariable Integer id) {
+        Optional<Users> user = userService.getUserById(id);
+        
+        if (user.isPresent()) {
+            ResponseDTO response = new ResponseDTO();
+            response.setMessage("User found");
+            response.setSuccess(true);
+            response.setData(user.get());
+            return ResponseEntity.ok(response);
+        } else {
+            ResponseDTO response = new ResponseDTO();
+            response.setMessage("User not found");
+            response.setSuccess(false);
+            return ResponseEntity.status(404).body(response);
+        }
     }
-}
-@PostMapping
-public ResponseEntity<Object> createUser(@RequestBody Usersdto userDto) {
-    // Mapear DTO a entidad Users
-    Users userEntity = new Users();
-    userEntity.setUsername(userDto.getUsername());
-    userEntity.setEmail(userDto.getEmail());
-    // No se setea userId porque normalmente es generado por la base de datos al crear
 
-    var response = userService.createUser(userEntity);  // Asumo que tienes un método createUser en tu servicio
-    return new ResponseEntity<>(response, HttpStatus.CREATED);
-}
+    // Crear nuevo usuario
+    @PostMapping
+    public ResponseEntity<ResponseDTO> createUser(@RequestBody Usersdto userDto) {
+        ResponseDTO serviceResponse = userService.saveUser(userDto);
+        
+        if (serviceResponse.isSuccess()) {
+            return ResponseEntity.status(201).body(serviceResponse);
+        } else {
+            return ResponseEntity.badRequest().body(serviceResponse);
+        }
+    }
 
+    // Actualizar usuario existente
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseDTO> updateUser(
+            @PathVariable Integer id,
+            @RequestBody Usersdto userDto) {
+        ResponseDTO serviceResponse = userService.updateUser(id, userDto);
+        
+        if (serviceResponse.isSuccess()) {
+            return ResponseEntity.ok(serviceResponse);
+        } else {
+            return ResponseEntity.status(404).body(serviceResponse);
+        }
+    }
 
-@PutMapping("/{id}")
-public ResponseEntity<Object> updateUser(@PathVariable Integer id, @RequestBody Usersdto userDto) {
-    // Mapear DTO a entidad Users
-    Users userEntity = new Users();
-    userEntity.setUserId(id);  // aquí usas el ID del path
-    userEntity.setUsername(userDto.getUsername());
-    userEntity.setEmail(userDto.getEmail());
-
-    var response = userService.updateUser(userEntity);
-    return new ResponseEntity<>(response, HttpStatus.OK);
-}
-
-
+    // Desactivar usuario (eliminación lógica)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable Integer id) {
-        var user = userService.deleteUser(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<ResponseDTO> deactivateUser(@PathVariable Integer id) {
+        // Nota: Necesitarías implementar este método en tu service
+        ResponseDTO response = new ResponseDTO();
+        response.setMessage("Method not implemented yet");
+        response.setSuccess(false);
+        return ResponseEntity.status(501).body(response);
     }
-
 }
