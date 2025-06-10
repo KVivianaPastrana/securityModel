@@ -1,6 +1,4 @@
 package com.security.demo.model;
-import com.security.demo.model.Rol;
-import com.security.demo.model.Page;
 import jakarta.persistence.*;
 
 @Entity

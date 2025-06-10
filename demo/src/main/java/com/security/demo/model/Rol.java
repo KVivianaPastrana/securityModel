@@ -1,16 +1,21 @@
 
 package com.security.demo.model;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import com.security.demo.model.Users;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 
@@ -19,15 +24,16 @@ import java.util.List;
 public class Rol {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Aquí está el auto-increment
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  
     @Column(name = "rol_id")
     private Integer rolId;
     
     @Column(name = "rol_name")
     private String rolName;
-  
-    @ManyToMany(mappedBy = "roles")
-private List<Users> users; // ✅ nombre plural y tipo correcto
+
+      @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @JsonIgnore // Evita problemas de serialización circular
+    private Set<Users> users = new HashSet<>();
     public Rol() {
         
     }
@@ -46,16 +52,6 @@ private List<Users> users; // ✅ nombre plural y tipo correcto
         this.rolId = rolId;
     }
        
-
-
-    // Getters y setters correctos
-public List<Users> getUsers() {
-    return users;
-}
-
-public void setUsers(List<Users> users) {
-    this.users = users;
-}
     public String getRolName() {
         return rolName;
     }
@@ -63,7 +59,13 @@ public void setUsers(List<Users> users) {
     public void setRolName(String rolName) {
         this.rolName = rolName;
     }
-
+  public Set<Users> getUsers() {
+        return users;
+    }
+    
+    public void setUsers(Set<Users> users) {
+        this.users = users;
+    }
 
 
 }

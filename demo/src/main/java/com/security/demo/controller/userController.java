@@ -18,16 +18,16 @@ public class userController {
     @Autowired
     private userService userService;
 
-    // Obtener todos los usuarios activos
     @GetMapping
-    public ResponseEntity<ResponseDTO> getAllActiveUsers() {
-        List<Users> users = userService.getAllActiveUsers();
-        ResponseDTO response = new ResponseDTO();
-        response.setMessage("Active users retrieved successfully");
-        response.setSuccess(true);
-        response.setData(users);
-        return ResponseEntity.ok(response);
-    }
+public ResponseEntity<ResponseDTO> getAllActiveUsers() {
+    List<Usersdto> users = userService.getAllActiveUsers();  // Cambiado a Usersdto
+    ResponseDTO response = new ResponseDTO();
+    response.setMessage("Active users retrieved successfully");
+    response.setSuccess(true);
+    response.setData(users);
+    return ResponseEntity.ok(response);
+}
+
 
     // Obtener usuario por ID
     @GetMapping("/{id}")

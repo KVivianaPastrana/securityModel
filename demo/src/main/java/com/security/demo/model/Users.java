@@ -7,16 +7,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.HashSet;
 import java.util.List;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import java.util.Set;
-import com.security.demo.model.Rol;
-import lombok.*;
-
 @Entity
 @Table(name = "users")
 public class Users {
@@ -36,12 +33,13 @@ public class Users {
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)
-@JoinTable(
-    name = "users_roles",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "rol_id")
-)
-private List<Rol> roles;
+    @JoinTable(
+        name = "user_roles", // Nombre de la tabla pivote
+        joinColumns = @JoinColumn(name = "user_id"), // FK hacia users
+        inverseJoinColumns = @JoinColumn(name = "rol_id") 
+    )
+    private Set<Rol> roles = new HashSet<>();
+    
 
     @Column(name="status")
     private Boolean status;
@@ -65,14 +63,6 @@ private List<Rol> roles;
         this.userId = userId;
     }
     
-    // Getters y setters (incluye para roles también)
-    public List<Rol> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Rol> roles) {
-        this.roles = roles;
-    }
 
     public String getUsername() {
         return username;
@@ -105,4 +95,12 @@ private List<Rol> roles;
     public void setStatus(Boolean status) {
         this.status = status;
     }
+        public Set<Rol> getRoles() {
+        return roles;
+    }
+    
+    public void setRoles(Set<Rol> roles) {
+        this.roles = roles;
+    }
+    
 }

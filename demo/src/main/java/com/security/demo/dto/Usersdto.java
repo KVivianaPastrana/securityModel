@@ -5,33 +5,23 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Usersdto {
-    private Integer userId;
-    private String username;
-    private String email;
+private String username;
+private String email;
     @JsonIgnore
 private String password;
-
-    private Boolean status;
-
-    // ✅ NUEVO: lista de roles
-    private List<Integer> roleIds;  // Podrías también usar List<RolDto> si quieres más detalles por rol
+private Boolean status;
+private List<Roldto> roles;
 
     public Usersdto() {
     }
 
-    public Usersdto(Integer userId, String username, String email, String password, Boolean status, List<Integer> roleIds) {
-        this.userId = userId;
+    public Usersdto(String username, String email, String password, Boolean status) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.status = status;
-        this.roleIds = roleIds;
+        
     }
-
-    // Getters y setters
-    public Integer getUserId() { return userId; }
-    public void setUserId(Integer userId) { this.userId = userId; }
-
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 
@@ -43,8 +33,14 @@ private String password;
 
     public Boolean getStatus() { return status; }
     public void setStatus(Boolean status) { this.status = status; }
-
-    public List<Integer> getRoleIds() { return roleIds; }
-    public void setRoleIds(List<Integer> roleIds) { this.roleIds = roleIds; }
     
+       public List<Roldto> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Roldto> roles) {
+        this.roles = roles;
+    }
 }
+
+

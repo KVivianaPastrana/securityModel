@@ -1,16 +1,14 @@
 package com.security.demo.service;
 
 import com.security.demo.dto.ResponseDTO;
+import com.security.demo.dto.Roldto;
 import com.security.demo.dto.Usersdto;
 import com.security.demo.model.Rol;
 import com.security.demo.model.Users;
 import com.security.demo.repository.Irol;
 import com.security.demo.repository.Iuser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,30 +22,17 @@ public class userService {
     @Autowired
     private Irol roleRepository;
 
-    public List<Users> getAllActiveUsers() {
-        return userRepository.getListUserActive();
-    }
+   public List<Usersdto> getAllActiveUsers() {
+    return userRepository.getListUserActive().stream()
+        .map(this::convertToDto)
+        .collect(Collectors.toList());
+}
 
     public Optional<Users> getUserById(Integer id) {
         return userRepository.findById(id);
     }
 
 
-    public Usersdto convertToDTO(Users user) {
-        Usersdto dto = new Usersdto();
-        dto.setUserId(user.getUserId());
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        dto.setStatus(user.getStatus());
-        
-        if (user.getRoles() != null) {
-            dto.setRoleIds(user.getRoles().stream()
-                .map(Rol::getRolId)
-                .collect(Collectors.toList()));
-        }
-        
-        return dto;
-    }
 
 public ResponseDTO saveUser(Usersdto userDto) {
     // Validaciones básicas
@@ -67,16 +52,10 @@ public ResponseDTO saveUser(Usersdto userDto) {
 
     Users user = convertToModel(userDto);
     user.setStatus(true); // Por defecto activo
-    
-    // Asignar roles si existen en el DTO
-      // Manejo de roles (ahora con Integers)
-    if (userDto.getRoleIds() != null && !userDto.getRoleIds().isEmpty()) {
-        List<Rol> roles = roleRepository.findAllById(userDto.getRoleIds());
-        user.setRoles(roles);
-    }
+  
 
     Users savedUser = userRepository.save(user);
-    return new ResponseDTO("User created successfully", true, convertToDTO(savedUser));
+    return new ResponseDTO("User created successfully", true, convertToDto(savedUser));
 }
 
 public ResponseDTO updateUser(Integer id, Usersdto userDto) {
@@ -89,14 +68,10 @@ public ResponseDTO updateUser(Integer id, Usersdto userDto) {
                 existingUser.setPassword(userDto.getPassword());
             }
             
-            // Manejo de roles - CORRECCIÓN: usar existingUser en lugar de user
-            if (userDto.getRoleIds() != null && !userDto.getRoleIds().isEmpty()) {
-                List<Rol> roles = roleRepository.findAllById(userDto.getRoleIds());
-                existingUser.setRoles(roles);  // Cambiado de user a existingUser
-            }
+ 
             
             Users updatedUser = userRepository.save(existingUser);
-            return new ResponseDTO("User updated successfully", true, convertToDTO(updatedUser));
+            return new ResponseDTO("User updated successfully", true, convertToDto(updatedUser));
         })
         .orElseGet(() -> {
             ResponseDTO response = new ResponseDTO();
@@ -108,12 +83,23 @@ public ResponseDTO updateUser(Integer id, Usersdto userDto) {
 
     public Users convertToModel(Usersdto dto) {
         Users user = new Users();
-        user.setUserId(dto.getUserId());
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword()); // Asignación directa sin encriptar
+        user.setPassword(dto.getPassword()); 
         user.setStatus(dto.getStatus());
         
         return user;
     }
+
+    public Usersdto convertToDto(Users user) {
+    Usersdto dto = new Usersdto();
+    dto.setUsername(user.getUsername());
+    dto.setEmail(user.getEmail());
+    dto.setStatus(user.getStatus());
+    // NO setRoles por ahora
+    return dto;
 }
+
+
+}
+
