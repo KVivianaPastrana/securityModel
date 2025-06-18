@@ -1,5 +1,9 @@
 package com.security.demo.model;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,15 +12,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
-
-import java.util.HashSet;
-import java.util.List;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import java.util.Set;
+import jakarta.persistence.ManyToOne;
+
+import java.util.Collection;
+import java.util.List;
+
 @Entity
 @Table(name = "users")
-public class Users {
+public class Users   implements UserDetails {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // Aquí está el auto-increment
@@ -32,18 +37,16 @@ public class Users {
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "user_roles", // Nombre de la tabla pivote
-        joinColumns = @JoinColumn(name = "user_id"), // FK hacia users
-        inverseJoinColumns = @JoinColumn(name = "rol_id") 
-    )
-    private Set<Rol> roles = new HashSet<>();
     
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Rol rol;
 
     @Column(name="status")
     private Boolean status;
-    public Users(Integer userId, String username, String email, String password, Boolean status) {
+
+
+    public Users(Integer userId, String username, String email, String password, Boolean status, Rol rol) {
         this.userId = userId;
         this.username = username;
         this.email = email;
@@ -95,12 +98,18 @@ public class Users {
     public void setStatus(Boolean status) {
         this.status = status;
     }
-        public Set<Rol> getRoles() {
-        return roles;
+     
+    public void setRol(Rol rol) {
+        this.rol = rol;
     }
     
-    public void setRoles(Set<Rol> roles) {
-        this.roles = roles;
+    public Rol getRol() {
+        return rol;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(rol.getRolName()));
     }
     
 }

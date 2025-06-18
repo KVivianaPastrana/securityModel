@@ -7,99 +7,104 @@ import com.security.demo.model.Rol;
 import com.security.demo.model.Users;
 import com.security.demo.repository.Irol;
 import com.security.demo.repository.Iuser;
+
+import lombok.RequiredArgsConstructor;
+
+import com.security.demo.dto.ResponseLogin;
+import com.security.demo.dto.RequestRegisterUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus.Series;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class userService {
 
-    @Autowired
-    private Iuser userRepository;
+    private final Iuser userRepository;
+    private final jwtServide jwtService;
+    private final PasswordEncoder passwordEncoder;
+    //Manejador de autenticación
+    private final AuthenticationManager authenticationManager;
     
-    @Autowired
-    private Irol roleRepository;
 
-   public List<Usersdto> getAllActiveUsers() {
-    return userRepository.getListUserActive().stream()
-        .map(this::convertToDto)
-        .collect(Collectors.toList());
-}
+    public List<Users> findAll() {
+        return userRepository.findAll();
+    }
 
     public Optional<Users> getUserById(Integer id) {
         return userRepository.findById(id);
     }
 
-
-
-public ResponseDTO saveUser(Usersdto userDto) {
-    // Validaciones básicas
-    if (userRepository.existsByUsername(userDto.getUsername())) {
-        ResponseDTO response = new ResponseDTO();
-        response.setMessage("Username already exists");
-        response.setSuccess(false);
-        return response;
-    }
-    
-    if (userRepository.existsByEmail(userDto.getEmail())) {
-        ResponseDTO response = new ResponseDTO();
-        response.setMessage("Email already exists");
-        response.setSuccess(false);
-        return response;
+    public Optional<Users> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
-    Users user = convertToModel(userDto);
-    user.setStatus(true); // Por defecto activo
-  
-
-    Users savedUser = userRepository.save(user);
-    return new ResponseDTO("User created successfully", true, convertToDto(savedUser));
-}
-
-public ResponseDTO updateUser(Integer id, Usersdto userDto) {
-    return userRepository.findById(id)
-        .map(existingUser -> {
-            existingUser.setUsername(userDto.getUsername());
-            existingUser.setEmail(userDto.getEmail());
-            
-            if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
-                existingUser.setPassword(userDto.getPassword());
-            }
-            
- 
-            
-            Users updatedUser = userRepository.save(existingUser);
-            return new ResponseDTO("User updated successfully", true, convertToDto(updatedUser));
-        })
-        .orElseGet(() -> {
-            ResponseDTO response = new ResponseDTO();
-            response.setMessage("User not found");
-            response.setSuccess(false);
-            return response;
-        });
-}
-
-    public Users convertToModel(Usersdto dto) {
-        Users user = new Users();
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword()); 
-        user.setStatus(dto.getStatus());
-        
-        return user;
+    public Optional<Users> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
-    public Usersdto convertToDto(Users user) {
-    Usersdto dto = new Usersdto();
-    dto.setUsername(user.getUsername());
-    dto.setEmail(user.getEmail());
-    dto.setStatus(user.getStatus());
-    // NO setRoles por ahora
-    return dto;
+
+    //Metodo para eliminar un usuario por Id
+     public ResponseDTO deleteUser(Integer id) {
+      Optional <Users> usuario = findById(id);
+      if(!usuario.isPresent()){
+        //Si no existe el usuario
+        return new ResponseDTO(HttpStatus.NOT_FOUND.toString(), "Usuario no encontrado");
+      }
+      //Si se encuentra el usuario, elimina el usuario
+      userRepository.deleteById(id);
+      return new ResponseDTO(HttpStatus.OK.toString(), "Usuario eliminado correctamente");
+    }
+
+
+    //Metodo para registrar un usuario
+    public ResponseDTO save (RequestRegisterUserDTO userDTO){
+    //Se convierte el DTO recibido en un modelo Users
+    Users usuario = convertToModelRegister(userDTO);
+    //Encriptamos la contraseña
+    usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+
+    //Se guarda el usuario en la base de datos
+    userRepository.save(usuario);
+    return new ResponseDTO(HttpStatus.OK.toString(), "Usuario creado correctamente");
+}
+
+//Metodo para hacer login
+
+public ResponseLogin login (RequestLoginDTO login){
+//Autenticacion con nombre de usuario y contraseña
+authenticationManager.authenticate(
+    new UsernamePasswordAuthenticationToken(
+     login.getUsername(),
+     login.getPassword()));
+
+//Obtener detalles del usuario desde el repositorio
+UserDetails user = userRepository.findByUsername(login.getUsername()).orElseThrow();
+
+//Generar token JWR y devolverlo
+ResponseLogin response = new ResponseLogin(jwtService.getToken(user));
+
+
+
 }
 
 
-}
 
+
+
+
+
+
+
+
+}

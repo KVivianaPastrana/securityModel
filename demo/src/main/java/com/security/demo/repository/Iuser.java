@@ -9,10 +9,10 @@ public interface Iuser extends JpaRepository<Users, Integer> {
 
     @Query("SELECT u FROM Users u WHERE u.status != false")
     List<Users> getListUserActive();
+    
+    Optional<Users> findByUsername(String username);
+    
+    Optional<Users> findByEmail(String email);
 
-    Optional<Users> findById(Integer id);
-
-    boolean existsByUsername(String username);
-
-    boolean existsByEmail(String email);
+    List<Users> findAllByStatus(boolean status);
 }
