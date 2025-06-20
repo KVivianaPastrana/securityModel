@@ -15,101 +15,60 @@ import jakarta.persistence.Table;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class Users   implements UserDetails {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Users implements UserDetails   {
 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // Aquí está el auto-increment
-    @Column(name = "user_id")
+    @Column(name = "user_id",nullable = false)
     private Integer userId;
 
-    @Column(name = "username")
+    @Column(name = "first_name,nullable = false,length = 50")
+    private String firstName;
+
+    @Column(name = "last_name,nullable = false,length = 50")
+    private String lastName;
+
+    @Column(name = "username,nullable = false,length = 50")
     private String username;
 
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "password")
+    @Column(name = "password,nullable = false,length = 20")
     private String password;
 
-    
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Rol rol;
-
-    @Column(name="status")
-    private Boolean status;
-
-
-    public Users(Integer userId, String username, String email, String password, Boolean status, Rol rol) {
-        this.userId = userId;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.status = status;
-    }
-
-    public Users() {
-        
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
     
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }   
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
-     
-    public void setRol(Rol rol) {
-        this.rol = rol;
-    }
-    
-    public Rol getRol() {
-        return rol;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(rol.getRolName()));
+    }
+
+
+    @Override
+    public String getUsername() {
+        return username;
     }
     
 }
