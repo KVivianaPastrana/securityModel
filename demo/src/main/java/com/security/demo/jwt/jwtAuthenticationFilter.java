@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 
 @Component
-public class jwrAuthenticationFilter extends OncePerRequestFilter {
+public class jwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
